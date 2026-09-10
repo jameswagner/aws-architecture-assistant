@@ -51,18 +51,17 @@ def fetch() -> list[RawDocument]:
 
     for _, href, pillar in _iter_pages(toc):
         url = BASE_URL + href
-        response = session.get(url, timeout=30)
-        response.raise_for_status()
-        title, text, images = aws_docs.parse_page(response.text)
-        metadata = {"pillar": pillar} if pillar else {}
-        if images:
-            metadata["images"] = images
+        response = aws_docs.get_page(session, url)
+        parsed = aws_docs.parse_page(response.text)
+        content, metadata = aws_docs.page_to_raw_fields(parsed)
+        if pillar:
+            metadata["pillar"] = pillar
         documents.append(
             RawDocument(
                 source="well_architected",
-                title=title,
+                title=parsed.title,
                 url=url,
-                content=text,
+                content=content,
                 fetched_on=today,
                 metadata=metadata,
             )
