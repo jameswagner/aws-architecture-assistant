@@ -11,16 +11,10 @@ here. This is the one place that constraint needs handling, not scattered
 across every source ingester.
 
 Node IDs are deterministic (hash of url + section heading + index within
-that section), not random — SentenceSplitter.split_text() is a pure
-function, so re-chunking unchanged text always reproduces the same IDs
-in the same order. Without this, every rebuild would assign fresh random
-UUIDs to every chunk, making it impossible to tell "same chunk as last
-run" from "brand new" — which is why build_index.py currently has to
-wipe the whole collection on every rebuild rather than only touching
-what changed (see issue #15). Each node also carries a content_hash so a
-future re-ingestion pass can tell "same slot, but did the text change"
-apart from "same slot, unchanged" — the ID alone only proves stable
-addressing, not that the content behind it didn't change.
+section), not random, so re-chunking unchanged text reproduces the same
+IDs — a prerequisite for detecting unchanged chunks on re-ingestion.
+Each node also carries a content_hash: the ID proves stable addressing,
+not that the text behind it is unchanged.
 """
 
 from __future__ import annotations
