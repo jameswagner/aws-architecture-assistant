@@ -8,6 +8,15 @@ Skips pure navigational/legal sections (contributors, notices, glossary,
 document revisions) — not architecture guidance. Pillar is derived from
 position in the TOC tree, not inferred, per the standing risk in
 docs/plan.md that these mappings must be real lookups.
+
+Two separate top-level sections are organized one-subtree-per-pillar:
+"The pillars of the framework" (summary content) AND "Appendix: Questions
+and best practices" (the deeper per-question/per-best-practice pages,
+confirmed live — e.g. "PERF02-BP01 Select the best compute options").
+Detected structurally (a section whose children are exactly the six
+pillar names), not by hardcoding both title strings, so a third such
+section wouldn't silently lose pillar tagging the way relying on a single
+hardcoded title did originally.
 """
 
 from __future__ import annotations
@@ -21,7 +30,14 @@ from ..base import RawDocument
 
 BASE_URL = "https://docs.aws.amazon.com/wellarchitected/latest/framework/"
 
-PILLARS_SECTION_TITLE = "The pillars of the framework"
+PILLAR_NAMES = {
+    "Operational excellence",
+    "Security",
+    "Reliability",
+    "Performance efficiency",
+    "Cost optimization",
+    "Sustainability",
+}
 SKIP_TOP_LEVEL_SECTIONS = {"Contributors", "Notices", "AWS Glossary", "Document revisions"}
 
 
@@ -31,12 +47,17 @@ def _walk(node: dict, pillar: str | None) -> Iterator[tuple[str, str, str | None
         yield from _walk(child, pillar)
 
 
+def _is_pillar_organized(section: dict) -> bool:
+    children = section.get("contents", [])
+    return bool(children) and all(child["title"] in PILLAR_NAMES for child in children)
+
+
 def _iter_pages(toc: dict) -> Iterator[tuple[str, str, str | None]]:
     """Yield (title, href, pillar) for every real page in the guide, pillar=None where n/a."""
     for section in toc["contents"]:
         if section["title"] in SKIP_TOP_LEVEL_SECTIONS:
             continue
-        if section["title"] == PILLARS_SECTION_TITLE:
+        if _is_pillar_organized(section):
             for pillar_node in section["contents"]:
                 yield from _walk(pillar_node, pillar=pillar_node["title"])
         else:
