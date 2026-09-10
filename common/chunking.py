@@ -9,10 +9,23 @@ Chroma requires flat scalar metadata — no nested lists or dicts — so
 anything list-shaped (category_path, image URLs) gets JSON-serialized
 here. This is the one place that constraint needs handling, not scattered
 across every source ingester.
+
+Node IDs are deterministic (hash of url + section heading + index within
+that section), not random — SentenceSplitter.split_text() is a pure
+function, so re-chunking unchanged text always reproduces the same IDs
+in the same order. Without this, every rebuild would assign fresh random
+UUIDs to every chunk, making it impossible to tell "same chunk as last
+run" from "brand new" — which is why build_index.py currently has to
+wipe the whole collection on every rebuild rather than only touching
+what changed (see issue #15). Each node also carries a content_hash so a
+future re-ingestion pass can tell "same slot, but did the text change"
+apart from "same slot, unchanged" — the ID alone only proves stable
+addressing, not that the content behind it didn't change.
 """
 
 from __future__ import annotations
 
+import hashlib
 import json
 
 from llama_index.core.node_parser import SentenceSplitter
@@ -22,6 +35,11 @@ from ingest.base import RawDocument
 
 CHUNK_SIZE = 768
 CHUNK_OVERLAP = 64
+
+
+def _deterministic_id(url: str, heading: str | None, index: int) -> str:
+    raw = f"{url}::{heading or ''}::{index}"
+    return hashlib.sha256(raw.encode()).hexdigest()
 
 
 def _base_metadata(doc: RawDocument, heading: str | None, images: list[dict]) -> dict:
@@ -53,8 +71,13 @@ def chunk_document(doc: RawDocument) -> list[TextNode]:
         text = section.get("text", "")
         if not text:
             continue
-        metadata = _base_metadata(doc, section.get("heading"), section.get("images") or [])
-        for piece in splitter.split_text(text):
-            nodes.append(TextNode(text=piece, metadata=metadata.copy()))
+        heading = section.get("heading")
+        metadata = _base_metadata(doc, heading, section.get("images") or [])
+        for i, piece in enumerate(splitter.split_text(text)):
+            node_metadata = metadata.copy()
+            node_metadata["content_hash"] = hashlib.sha256(piece.encode()).hexdigest()
+            nodes.append(
+                TextNode(id_=_deterministic_id(doc.url, heading, i), text=piece, metadata=node_metadata)
+            )
 
     return nodes
