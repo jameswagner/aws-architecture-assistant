@@ -1,18 +1,10 @@
-import json
-from pathlib import Path
-
-QUESTIONS_PATH = Path(__file__).parent.parent / "eval" / "questions.jsonl"
+from eval.run_eval import load_questions
 
 VALID_SOURCES = {"well_architected", "prescriptive_guidance"}
 URL_PREFIXES = {
     "well_architected": "https://docs.aws.amazon.com/wellarchitected/latest/framework/",
     "prescriptive_guidance": "https://docs.aws.amazon.com/prescriptive-guidance/latest/patterns/",
 }
-
-
-def load_questions() -> list[dict]:
-    lines = QUESTIONS_PATH.read_text().splitlines()
-    return [json.loads(line) for line in lines if line.strip()]
 
 
 def test_at_least_ten_questions():
