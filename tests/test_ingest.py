@@ -1,7 +1,7 @@
 from datetime import date
 
 from ingest.base import RawDocument
-from ingest.sources import prescriptive_guidance, well_architected
+from ingest.sources import prescriptive_guidance
 
 
 def test_raw_document_holds_fields():
@@ -17,10 +17,9 @@ def test_raw_document_holds_fields():
     assert doc.metadata["pillar"] == "Reliability"
 
 
-def test_source_stubs_still_phase_1_todo():
-    for module in (well_architected, prescriptive_guidance):
-        try:
-            module.fetch()
-        except NotImplementedError:
-            continue
-        raise AssertionError(f"{module.__name__}.fetch() is implemented — update this test")
+def test_prescriptive_guidance_still_phase_1_todo():
+    try:
+        prescriptive_guidance.fetch()
+    except NotImplementedError:
+        return
+    raise AssertionError("prescriptive_guidance.fetch() is implemented — update this test")
