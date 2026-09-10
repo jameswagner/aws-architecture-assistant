@@ -3,3 +3,5 @@
 # actually ships to the Space. Regenerate/expand as phases add dependencies.
 gradio>=5.0
 python-dotenv>=1.2.3
+requests>=2.34.2
+beautifulsoup4>=4.12
