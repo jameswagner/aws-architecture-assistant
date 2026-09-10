@@ -1,12 +1,11 @@
-"""Judge synthesized answers, not just retrieval, using an LLM as judge.
+"""Judge synthesized answers (Faithfulness, Relevancy, Correctness) via LLM-as-judge.
 
-run_eval.py only checks whether the right chunk was retrieved. Nothing
-checked whether the synthesized answer was faithful to what was retrieved,
-relevant to the question, or correct — the gap that let the CodeBuild
-over-generalization issue through until it was spotted by hand.
+run_eval.py only checks retrieval; this checks whether a synthesized
+answer is faithful to the retrieved context, relevant to the question,
+and correct against a reference answer.
 
-Runs a real synthesis call plus three judge calls per question, unlike
-run_eval.py's retrieval-only checks — costs real money per run.
+Runs a real synthesis call plus three judge calls per question — costs
+real money per run, unlike run_eval.py's retrieval-only checks.
 
 Usage: python -m eval.answer_quality
 """
