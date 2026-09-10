@@ -30,6 +30,7 @@ def retrieve(index: VectorStoreIndex, query: str, top_k: int = 5) -> list[dict]:
             "title": node.metadata.get("title"),
             "url": node.metadata.get("url"),
             "section": node.metadata.get("section"),
+            "source": node.metadata.get("source"),
         }
         for node in retriever.retrieve(query)
     ]
