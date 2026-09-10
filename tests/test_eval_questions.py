@@ -24,6 +24,7 @@ def test_every_question_has_required_fields():
         assert q["question"].strip()
         assert q["expected_source"] in VALID_SOURCES
         assert q["expected_url"].startswith(URL_PREFIXES[q["expected_source"]])
+        assert q["reference_answer"].strip()
 
 
 def test_both_sources_represented():

@@ -77,4 +77,8 @@ def answer(index: VectorStoreIndex, question: str, top_k: int = 5) -> dict:
             seen_urls.add(r["url"])
             citations.append({"title": r["title"], "url": r["url"]})
 
-    return {"answer": str(response.message.content), "citations": citations}
+    return {
+        "answer": str(response.message.content),
+        "citations": citations,
+        "contexts": [r["text"] for r in results],
+    }
