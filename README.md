@@ -1,4 +1,4 @@
-# AWS Architecture Precedent Assistant
+# AWS Architecture Assistant
 
 **Status: Phase 1 (retrieval core + basic synthesis) working.** Real
 corpus built (Well-Architected + Prescriptive Guidance), ask it a
@@ -19,16 +19,16 @@ cp .env.example .env   # then fill in a real OPENAI_API_KEY
 .venv/bin/python3 app.py
 ```
 
-Given a problem description, retrieves grounded AWS precedent
-(Well-Architected guidance, Prescriptive Guidance patterns, and later
-real customer case studies) and proposes a specific architecture — with
-citations back to the precedent and a generated diagram — rather than
-just answering questions about AWS.
+Given a problem description, retrieves grounded AWS guidance
+(Well-Architected best practices, Prescriptive Guidance patterns, and
+later real customer case studies) and proposes a specific architecture —
+with citations back to the source material and a generated diagram —
+rather than just answering questions about AWS.
 
 ## Target user
 
-Solutions architects and cloud consultants who want precedent for a
-problem like theirs, a proposed architecture, and the reasoning behind
+Solutions architects and cloud consultants who want grounded guidance for
+a problem like theirs, a proposed architecture, and the reasoning behind
 it — not generic exam-prep Q&A.
 
 ## Required API keys

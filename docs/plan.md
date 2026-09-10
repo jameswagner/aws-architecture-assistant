@@ -1,18 +1,18 @@
-# Project: AWS Architecture Precedent Assistant
+# Project: AWS Architecture Assistant
 
 ## One-line pitch
 
-Given a problem description, retrieve grounded AWS precedent (Well-
-Architected guidance, Prescriptive Guidance patterns, real customer
+Given a problem description, retrieve grounded AWS guidance (Well-
+Architected best practices, Prescriptive Guidance patterns, real customer
 case studies) and propose a specific architecture — with citations
-back to the precedent, and a generated diagram — rather than just
+back to the source material, and a generated diagram — rather than just
 answering questions about AWS.
 
 ## Target user
 
-Solutions architects and cloud consultants who want "here's precedent
-for a problem like mine, here's a proposed architecture, here's why"
-— not generic exam-prep Q&A (too commoditized) and not enterprise
+Solutions architects and cloud consultants who want "here's grounded
+guidance for a problem like mine, here's a proposed architecture, here's
+why" — not generic exam-prep Q&A (too commoditized) and not enterprise
 proprietary data (not accessible). The value is in synthesis +
 citation + diagram, not in having unique data.
 
@@ -74,16 +74,16 @@ in parallel.
 - Return raw retrieved passages with citations, no LLM synthesis
 - Build a small labeled eval set (10-20 real questions with known
   correct source sections) — do this now, not later
-- **Demo-able output:** ask a question, get back cited precedent
+- **Demo-able output:** ask a question, get back cited guidance
 
 ### Phase 2 — Expand sources + structure
 - Add Builders' Library, case studies, Solutions Library, whitepaper PDFs
 - Add metadata filtering (by WA pillar, service, source type)
-- Add query routing (precedent-lookup vs. framework-guidance questions)
+- Add query routing (pattern-lookup vs. framework-guidance questions)
 - Re-run eval set against expanded corpus
 
 ### Phase 3 — Architecture synthesis
-- LLM proposes a specific architecture from retrieved precedent,
+- LLM proposes a specific architecture from retrieved guidance,
   every claim traceable to a citation
 - Add streaming responses
 - Add reranker on top of hybrid retrieval

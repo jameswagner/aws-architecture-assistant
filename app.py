@@ -28,8 +28,8 @@ def respond(question: str) -> tuple[str, str]:
     return result["answer"], citations
 
 
-with gr.Blocks(title="AWS Architecture Precedent Assistant") as demo:
-    gr.Markdown("# AWS Architecture Precedent Assistant")
+with gr.Blocks(title="AWS Architecture Assistant") as demo:
+    gr.Markdown("# AWS Architecture Assistant")
     gr.Markdown(
         "Ask a question about AWS architecture and get an answer grounded in "
         "Well-Architected Framework guidance and Prescriptive Guidance patterns, "
