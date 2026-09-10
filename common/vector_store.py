@@ -1,10 +1,10 @@
-"""Persistent Chroma vector store, following the lesson 5 pattern.
+"""Persistent Chroma vector store.
 
-Persistent (not the in-memory SimpleVectorStore lesson 4 used) since a
-deployed tool needs the index to survive restarts. Collection name is
-env-driven for the same reason the embedding model is: a config change,
-not a code change, if it ever needs to vary (e.g. a separate collection
-per embedding model to avoid mixing incompatible vector spaces).
+Persistent, not in-memory, since a deployed tool needs the index to
+survive restarts. Collection name is env-driven for the same reason the
+embedding model is: a config change, not a code change, if it ever needs
+to vary (e.g. a separate collection per embedding model to avoid mixing
+incompatible vector spaces).
 """
 
 from __future__ import annotations
