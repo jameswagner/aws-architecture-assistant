@@ -29,3 +29,16 @@ def get_vector_store(chroma_dir: pathlib.Path = CHROMA_DIR) -> ChromaVectorStore
     client = get_chroma_client(chroma_dir)
     collection = client.get_or_create_collection(collection_name)
     return ChromaVectorStore(chroma_collection=collection)
+
+
+def reset_vector_store(chroma_dir: pathlib.Path = CHROMA_DIR) -> ChromaVectorStore:
+    """Delete the collection first, so a re-run replaces stale data instead
+    of accumulating duplicates alongside it — node IDs aren't stable across
+    runs, so get_or_create_collection alone would just keep adding rows."""
+    collection_name = os.environ.get("CHROMA_COLLECTION", DEFAULT_COLLECTION_NAME)
+    client = get_chroma_client(chroma_dir)
+    try:
+        client.delete_collection(collection_name)
+    except Exception:
+        pass  # fine if it didn't exist yet
+    return ChromaVectorStore(chroma_collection=client.get_or_create_collection(collection_name))
