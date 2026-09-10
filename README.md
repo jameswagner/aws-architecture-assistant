@@ -1,6 +1,23 @@
 # AWS Architecture Precedent Assistant
 
-**Status: Phase 0 (scaffolding) — not yet functional.**
+**Status: Phase 1 (retrieval core + basic synthesis) working.** Real
+corpus built (Well-Architected + Prescriptive Guidance), ask it a
+question via `python app.py` and get a cited answer.
+
+## Setup
+
+This repo has its **own environment, separate from the root `Ai-tutor`
+project's** — they're different git repos with different dependencies
+(this one uses OpenAI for embeddings/LLM; the root project uses
+Anthropic). Running with the root project's environment active will
+fail with a confusing `ModuleNotFoundError`. From `capstone/`:
+
+```
+uv venv .venv
+uv pip install -p .venv -r requirements.txt
+cp .env.example .env   # then fill in a real OPENAI_API_KEY
+.venv/bin/python3 app.py
+```
 
 Given a problem description, retrieves grounded AWS precedent
 (Well-Architected guidance, Prescriptive Guidance patterns, and later
