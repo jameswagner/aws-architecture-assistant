@@ -58,10 +58,9 @@ def test_iter_pages_tags_pillar_from_toc_position():
 
 
 def test_iter_pages_tags_pillar_in_any_pillar_organized_section():
-    """Not just "The pillars of the framework" — any section whose children are
-    exactly the pillar names, e.g. the deeper "Appendix" section (confirmed
-    live: real per-best-practice pages there were silently getting
-    pillar=None before this was detected structurally instead of by title).
+    """Not just "The pillars of the framework" — any section whose children
+    are exactly the pillar names, e.g. the deeper "Appendix" section, which
+    also holds real per-best-practice pages.
     """
     pages = list(_iter_pages(SAMPLE_TOC))
     by_href = {href: pillar for _, href, pillar in pages}

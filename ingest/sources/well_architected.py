@@ -10,13 +10,12 @@ position in the TOC tree, not inferred, per the standing risk in
 docs/plan.md that these mappings must be real lookups.
 
 Two separate top-level sections are organized one-subtree-per-pillar:
-"The pillars of the framework" (summary content) AND "Appendix: Questions
-and best practices" (the deeper per-question/per-best-practice pages,
-confirmed live — e.g. "PERF02-BP01 Select the best compute options").
-Detected structurally (a section whose children are exactly the six
-pillar names), not by hardcoding both title strings, so a third such
-section wouldn't silently lose pillar tagging the way relying on a single
-hardcoded title did originally.
+"The pillars of the framework" (summary content) and "Appendix: Questions
+and best practices" (deeper per-question/per-best-practice pages, e.g.
+"PERF02-BP01 Select the best compute options"). Detected structurally —
+a section whose children are exactly the six pillar names — rather than
+by hardcoding either title, so a third such section would still get
+pillar tagging correctly.
 """
 
 from __future__ import annotations
