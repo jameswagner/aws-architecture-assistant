@@ -1,7 +1,6 @@
 from datetime import date
 
 from ingest.base import RawDocument
-from ingest.sources import prescriptive_guidance
 
 
 def test_raw_document_holds_fields():
@@ -15,11 +14,3 @@ def test_raw_document_holds_fields():
     )
     assert doc.source == "well_architected"
     assert doc.metadata["pillar"] == "Reliability"
-
-
-def test_prescriptive_guidance_still_phase_1_todo():
-    try:
-        prescriptive_guidance.fetch()
-    except NotImplementedError:
-        return
-    raise AssertionError("prescriptive_guidance.fetch() is implemented — update this test")
