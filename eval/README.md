@@ -1,8 +1,19 @@
 # Eval set
 
-Populated in Phase 1, once Well-Architected + Prescriptive Guidance are
-ingested — build it alongside retrieval, not after. Target: 10-20 real
-questions with known correct source sections.
+Populated: 13 questions (8 Well-Architected, 5 Prescriptive Guidance),
+each verified against the real live page before being added — not
+guessed. Covers all 6 WA pillars and 4 PG categories.
+
+Run it against the real corpus (requires `python build_index.py` to have
+been run first) with:
+
+```
+python -m eval.run_eval
+```
+
+Reports a hit/miss per question (was `expected_url` in the top-k
+retrieved results?) and an overall hit rate — a real, if informal, signal
+on retrieval quality, not just "it ran."
 
 Format: `questions.jsonl`, one JSON object per line —
 
