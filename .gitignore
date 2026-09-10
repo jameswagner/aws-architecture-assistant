@@ -1,0 +1,16 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Secrets
+.env
+
+# Downloaded/scraped data and embedding caches
+data/*
+!data/.gitkeep

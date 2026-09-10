@@ -1,0 +1,5 @@
+# HF Space runtime deps. Kept separate from the repo-root pyproject.toml
+# (which covers local dev across the whole course repo) since this is what
+# actually ships to the Space. Regenerate/expand as phases add dependencies.
+gradio>=5.0
+python-dotenv>=1.2.3

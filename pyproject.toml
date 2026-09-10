@@ -1,0 +1,9 @@
+[project]
+name = "aws-architecture-precedent-assistant"
+version = "0.1.0"
+description = "Retrieve grounded AWS precedent and propose a cited, diagrammed architecture"
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
