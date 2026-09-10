@@ -11,7 +11,10 @@ from __future__ import annotations
 
 import os
 
+from dotenv import load_dotenv
 from llama_index.embeddings.openai import OpenAIEmbedding
+
+load_dotenv()
 
 DEFAULT_EMBEDDING_MODEL = "text-embedding-3-small"
 

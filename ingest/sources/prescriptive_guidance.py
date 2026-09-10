@@ -43,18 +43,17 @@ def fetch() -> list[RawDocument]:
 
     for _, href, category_path in _iter_pages(toc):
         url = BASE_URL + href
-        response = session.get(url, timeout=30)
-        response.raise_for_status()
-        title, text, images = aws_docs.parse_page(response.text)
-        metadata = {"category_path": list(category_path)} if category_path else {}
-        if images:
-            metadata["images"] = images
+        response = aws_docs.get_page(session, url)
+        parsed = aws_docs.parse_page(response.text)
+        content, metadata = aws_docs.page_to_raw_fields(parsed)
+        if category_path:
+            metadata["category_path"] = list(category_path)
         documents.append(
             RawDocument(
                 source="prescriptive_guidance",
-                title=title,
+                title=parsed.title,
                 url=url,
-                content=text,
+                content=content,
                 fetched_on=today,
                 metadata=metadata,
             )
