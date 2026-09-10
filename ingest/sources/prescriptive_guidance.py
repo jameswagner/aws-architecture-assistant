@@ -45,7 +45,10 @@ def fetch() -> list[RawDocument]:
         url = BASE_URL + href
         response = session.get(url, timeout=30)
         response.raise_for_status()
-        title, text = aws_docs.parse_page(response.text)
+        title, text, images = aws_docs.parse_page(response.text)
+        metadata = {"category_path": list(category_path)} if category_path else {}
+        if images:
+            metadata["images"] = images
         documents.append(
             RawDocument(
                 source="prescriptive_guidance",
@@ -53,7 +56,7 @@ def fetch() -> list[RawDocument]:
                 url=url,
                 content=text,
                 fetched_on=today,
-                metadata={"category_path": list(category_path)} if category_path else {},
+                metadata=metadata,
             )
         )
         time.sleep(aws_docs.REQUEST_DELAY_SECONDS)

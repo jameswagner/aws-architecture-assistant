@@ -53,7 +53,10 @@ def fetch() -> list[RawDocument]:
         url = BASE_URL + href
         response = session.get(url, timeout=30)
         response.raise_for_status()
-        title, text = aws_docs.parse_page(response.text)
+        title, text, images = aws_docs.parse_page(response.text)
+        metadata = {"pillar": pillar} if pillar else {}
+        if images:
+            metadata["images"] = images
         documents.append(
             RawDocument(
                 source="well_architected",
@@ -61,7 +64,7 @@ def fetch() -> list[RawDocument]:
                 url=url,
                 content=text,
                 fetched_on=today,
-                metadata={"pillar": pillar} if pillar else {},
+                metadata=metadata,
             )
         )
         time.sleep(aws_docs.REQUEST_DELAY_SECONDS)
