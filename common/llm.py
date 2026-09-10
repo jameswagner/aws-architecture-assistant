@@ -22,3 +22,9 @@ DEFAULT_MODEL = "gpt-4o-mini"
 def get_llm() -> OpenAI:
     model = os.environ.get("LLM_MODEL", DEFAULT_MODEL)
     return OpenAI(model=model)
+
+
+def get_judge_llm() -> OpenAI:
+    """Defaults to the same model as get_llm(), overridable independently."""
+    model = os.environ.get("JUDGE_LLM_MODEL") or os.environ.get("LLM_MODEL", DEFAULT_MODEL)
+    return OpenAI(model=model)
