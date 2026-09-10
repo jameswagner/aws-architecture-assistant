@@ -1,4 +1,4 @@
-from ingest.sources.well_architected import _iter_pages, _parse_page
+from ingest.sources.well_architected import _iter_pages
 
 SAMPLE_TOC = {
     "contents": [
@@ -33,14 +33,6 @@ SAMPLE_TOC = {
     ]
 }
 
-SAMPLE_PAGE_HTML = """
-<html><body><div id="main-content"><div id="main-col-body">
-<h1 class="topictitle" id="welcome">Sample Best Practice</h1>
-<p>Some guidance text.</p>
-<p>More guidance text.</p>
-</div></div></body></html>
-"""
-
 
 def test_iter_pages_tags_pillar_from_toc_position():
     pages = list(_iter_pages(SAMPLE_TOC))
@@ -57,11 +49,3 @@ def test_iter_pages_skips_boilerplate_sections():
     hrefs = {href for _, href, _ in pages}
 
     assert "contributors.html" not in hrefs
-
-
-def test_parse_page_extracts_title_and_text():
-    title, text = _parse_page(SAMPLE_PAGE_HTML)
-
-    assert title == "Sample Best Practice"
-    assert "Some guidance text." in text
-    assert "More guidance text." in text

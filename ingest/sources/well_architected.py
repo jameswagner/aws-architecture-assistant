@@ -1,10 +1,7 @@
 """Well-Architected Framework ingester.
 
-Access: requests + BS4 over static HTML on docs.aws.amazon.com — the page
-markup is server-rendered (verified against the live site), no headless
-browser needed. Page list comes from the guide's own toc-contents.json
-manifest rather than a hardcoded/guessed URL list, so it tracks the real
-site structure.
+Page list comes from the guide's own toc-contents.json manifest rather
+than a hardcoded/guessed URL list, so it tracks the real site structure.
 License: CC-BY-SA-4.0.
 
 Skips pure navigational/legal sections (contributors, notices, glossary,
@@ -19,15 +16,10 @@ import time
 from collections.abc import Iterator
 from datetime import date
 
-import requests
-from bs4 import BeautifulSoup
-
+from .. import aws_docs
 from ..base import RawDocument
 
 BASE_URL = "https://docs.aws.amazon.com/wellarchitected/latest/framework/"
-TOC_URL = BASE_URL + "toc-contents.json"
-USER_AGENT = "aws-architecture-precedent-assistant/0.1 (+https://github.com/jameswagner/aws-architecture-precedent-assistant)"
-REQUEST_DELAY_SECONDS = 0.3
 
 PILLARS_SECTION_TITLE = "The pillars of the framework"
 SKIP_TOP_LEVEL_SECTIONS = {"Contributors", "Notices", "AWS Glossary", "Document revisions"}
@@ -51,22 +43,9 @@ def _iter_pages(toc: dict) -> Iterator[tuple[str, str, str | None]]:
             yield from _walk(section, pillar=None)
 
 
-def _parse_page(html: str) -> tuple[str, str]:
-    """Extract (title, text) from a page's main content region."""
-    soup = BeautifulSoup(html, "html.parser")
-    body = soup.find(id="main-col-body")
-    if body is None:
-        raise ValueError("page is missing #main-col-body — site structure may have changed")
-    title_el = body.find(class_="topictitle")
-    title = title_el.get_text(strip=True) if title_el else ""
-    return title, body.get_text(" ", strip=True)
-
-
 def fetch() -> list[RawDocument]:
-    session = requests.Session()
-    session.headers["User-Agent"] = USER_AGENT
-
-    toc = session.get(TOC_URL, timeout=30).json()
+    session = aws_docs.new_session()
+    toc = aws_docs.fetch_toc(session, BASE_URL)
     today = date.today()
     documents = []
 
@@ -74,7 +53,10 @@ def fetch() -> list[RawDocument]:
         url = BASE_URL + href
         response = session.get(url, timeout=30)
         response.raise_for_status()
-        title, text = _parse_page(response.text)
+        title, text, images = aws_docs.parse_page(response.text)
+        metadata = {"pillar": pillar} if pillar else {}
+        if images:
+            metadata["images"] = images
         documents.append(
             RawDocument(
                 source="well_architected",
@@ -82,9 +64,9 @@ def fetch() -> list[RawDocument]:
                 url=url,
                 content=text,
                 fetched_on=today,
-                metadata={"pillar": pillar} if pillar else {},
+                metadata=metadata,
             )
         )
-        time.sleep(REQUEST_DELAY_SECONDS)
+        time.sleep(aws_docs.REQUEST_DELAY_SECONDS)
 
     return documents
