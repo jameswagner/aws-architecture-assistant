@@ -17,7 +17,7 @@ from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
 
-USER_AGENT = "aws-architecture-precedent-assistant/0.1 (+https://github.com/jameswagner/aws-architecture-precedent-assistant)"
+USER_AGENT = "aws-architecture-assistant/0.1 (+https://github.com/jameswagner/aws-architecture-assistant)"
 REQUEST_DELAY_SECONDS = 0.3
 DOCS_DOMAIN = "https://docs.aws.amazon.com"
 
@@ -74,7 +74,7 @@ def parse_page(html: str) -> ParsedPage:
     Diagrams (<img>) would otherwise be silently dropped — get_text()
     ignores them entirely, alt text included. Alt text is folded into the
     section's text so retrieval can match on it; image URLs are kept
-    per-section so a diagram can be surfaced as supporting precedent even
+    per-section so a diagram can be surfaced as supporting reference material even
     when alt text is missing or unhelpful.
     """
     soup = BeautifulSoup(html, "html.parser")

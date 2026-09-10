@@ -16,7 +16,7 @@ import chromadb
 from llama_index.vector_stores.chroma import ChromaVectorStore
 
 CHROMA_DIR = pathlib.Path(__file__).resolve().parent.parent / "data" / "chroma"
-DEFAULT_COLLECTION_NAME = "aws_precedent"
+DEFAULT_COLLECTION_NAME = "aws_guidance"
 
 
 def get_chroma_client(chroma_dir: pathlib.Path = CHROMA_DIR) -> chromadb.ClientAPI:
