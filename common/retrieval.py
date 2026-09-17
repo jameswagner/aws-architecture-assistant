@@ -10,13 +10,19 @@ from __future__ import annotations
 from llama_index.core import StorageContext, VectorStoreIndex
 from llama_index.core.retrievers import QueryFusionRetriever
 from llama_index.core.retrievers.fusion_retriever import FUSION_MODES
+from llama_index.core.schema import NodeWithScore
 from llama_index.retrievers.bm25 import BM25Retriever
 
 from common.embeddings import get_embed_model
 from common.vector_store import get_vector_store
 
 # BM25 tokenizes and scores the whole corpus at build time, so this is cached
-# per loaded index rather than rebuilt on every retrieve() call.
+# per loaded index rather than rebuilt on every retrieve() call. Keyed by
+# id(index): scoped to one in-memory index object, not its underlying
+# content, so a stale entry could theoretically be returned if that object
+# were garbage-collected and its address reused by an unrelated index --
+# not a practical risk given this app loads one index per process lifetime
+# and keeps it alive, but not something id() rules out structurally.
 _bm25_retriever_cache: dict[int, BM25Retriever] = {}
 
 
@@ -36,25 +42,30 @@ def _get_bm25_retriever(index: VectorStoreIndex) -> BM25Retriever:
     return _bm25_retriever_cache[cache_key]
 
 
+def _retrieve_hybrid(index: VectorStoreIndex, query: str, top_k: int) -> list[NodeWithScore]:
+    """Fuse vector and BM25 retrieval via Reciprocal Rank Fusion."""
+    # Over-fetch from each retriever before fusing, so a node that's merely
+    # decent in both lists has room to outrank one that's only strong in a
+    # single list.
+    candidate_k = max(top_k * 4, 20)
+    vector_retriever = index.as_retriever(similarity_top_k=candidate_k)
+
+    bm25_retriever = _get_bm25_retriever(index)
+    bm25_retriever.similarity_top_k = candidate_k
+
+    fusion_retriever = QueryFusionRetriever(
+        retrievers=[vector_retriever, bm25_retriever],
+        mode=FUSION_MODES.RECIPROCAL_RANK,
+        similarity_top_k=top_k,
+        num_queries=1,  # fuse only these two retrievers' own results, no LLM query rewrites
+        use_async=False,
+    )
+    return fusion_retriever.retrieve(query)
+
+
 def retrieve(index: VectorStoreIndex, query: str, top_k: int = 5, hybrid: bool = True) -> list[dict]:
     if hybrid:
-        # Over-fetch from each retriever before fusing, so a node that's
-        # merely decent in both lists has room to outrank one that's only
-        # strong in a single list.
-        candidate_k = max(top_k * 4, 20)
-        vector_retriever = index.as_retriever(similarity_top_k=candidate_k)
-
-        bm25_retriever = _get_bm25_retriever(index)
-        bm25_retriever.similarity_top_k = candidate_k
-
-        fusion_retriever = QueryFusionRetriever(
-            retrievers=[vector_retriever, bm25_retriever],
-            mode=FUSION_MODES.RECIPROCAL_RANK,
-            similarity_top_k=top_k,
-            num_queries=1,  # fuse only these two retrievers' own results, no LLM query rewrites
-            use_async=False,
-        )
-        nodes = fusion_retriever.retrieve(query)
+        nodes = _retrieve_hybrid(index, query, top_k)
     else:
         nodes = index.as_retriever(similarity_top_k=top_k).retrieve(query)
 
