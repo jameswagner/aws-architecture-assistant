@@ -4,8 +4,8 @@ Unlike the Well-Architected Framework, this guide's toc-contents.json is a
 flat catalog under category listings, not one hierarchical document: only
 leaf nodes (no children) are real pattern pages — every node with children
 (e.g. "compute-pattern-list.html") is a pure navigation/topic-listing page
-with no guidance content, confirmed against a live sample. Category path
-is preserved as metadata since there's no single "pillar" equivalent here.
+with no guidance content. Category path is preserved as metadata since
+there's no single "pillar" equivalent here.
 License: CC-BY-SA-4.0.
 """
 

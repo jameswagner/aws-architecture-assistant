@@ -1,12 +1,11 @@
 """Shared client for AWS's docs.aws.amazon.com doc-viewer platform.
 
 Well-Architected Framework and Prescriptive Guidance patterns both run on
-this platform — confirmed independently against live pages: same
-toc-contents.json manifest per guide, same #main-col-body / h1.topictitle
-content structure, both server-rendered (no headless browser needed).
-This is the common client; per-source page selection (which nodes are
-real content vs. navigation, how to derive metadata) stays in
-ingest/sources/<name>.py since that varies by source.
+this platform: same toc-contents.json manifest per guide, same
+#main-col-body / h1.topictitle content structure, both server-rendered
+(no headless browser needed). This is the common client; per-source page
+selection (which nodes are real content vs. navigation, how to derive
+metadata) stays in ingest/sources/<name>.py since that varies by source.
 """
 
 from __future__ import annotations
@@ -48,11 +47,10 @@ def fetch_toc(session: requests.Session, base_url: str) -> dict:
 def get_page(session: requests.Session, url: str) -> requests.Response:
     """GET a page with the encoding bug worked around.
 
-    These pages omit charset from their Content-Type header (confirmed
-    live), so requests falls back to ISO-8859-1 per the HTTP spec even
-    though the actual content is UTF-8 (also confirmed live) — without
-    this, non-ASCII characters like non-breaking spaces come through as
-    mojibake, degrading both embedding quality and citation display.
+    These pages omit charset from their Content-Type header, so requests
+    falls back to ISO-8859-1 per the HTTP spec even though the actual
+    content is UTF-8 — without this, non-ASCII characters like
+    non-breaking spaces come through as mojibake.
     """
     response = session.get(url, timeout=30)
     response.raise_for_status()
@@ -64,12 +62,11 @@ def parse_page(html: str) -> ParsedPage:
     """Split a page's main content region into sections on <h2> boundaries.
 
     Headings and their content are flat siblings under #main-col-body on
-    this platform (confirmed against live pages), not nested per-section
-    wrappers, which is what makes this walk straightforward. Pages with no
-    <h2> at all (confirmed true of Well-Architected's framework guide —
-    see docs/chunking_strategy.md) produce a single heading=None section
-    holding the whole page, so downstream chunking doesn't need to special-
-    case sourceless structure.
+    this platform, not nested per-section wrappers, which is what makes
+    this walk straightforward. Pages with no <h2> at all (see
+    docs/chunking_strategy.md) produce a single heading=None section
+    holding the whole page, so downstream chunking doesn't need to
+    special-case sourceless structure.
 
     Diagrams (<img>) would otherwise be silently dropped — get_text()
     ignores them entirely, alt text included. Alt text is folded into the
