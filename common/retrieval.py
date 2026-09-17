@@ -8,6 +8,7 @@ synthesis quality against, not this one.
 from __future__ import annotations
 
 from llama_index.core import StorageContext, VectorStoreIndex
+from llama_index.core.llms import MockLLM
 from llama_index.core.retrievers import QueryFusionRetriever
 from llama_index.core.retrievers.fusion_retriever import FUSION_MODES
 from llama_index.core.schema import NodeWithScore
@@ -58,6 +59,12 @@ def _retrieve_hybrid(index: VectorStoreIndex, query: str, top_k: int) -> list[No
         mode=FUSION_MODES.RECIPROCAL_RANK,
         similarity_top_k=top_k,
         num_queries=1,  # fuse only these two retrievers' own results, no LLM query rewrites
+        # QueryFusionRetriever resolves an LLM at construction time regardless
+        # of num_queries, even though it's only called when num_queries > 1.
+        # Passing MockLLM explicitly avoids it defaulting to a real OpenAI
+        # client (Settings.llm) that would otherwise need an API key just to
+        # sit unused.
+        llm=MockLLM(),
         use_async=False,
     )
     return fusion_retriever.retrieve(query)
