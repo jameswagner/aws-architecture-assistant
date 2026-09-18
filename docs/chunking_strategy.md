@@ -52,7 +52,8 @@ this is what Phase 2 metadata filtering and query routing key off of.
 | Prescriptive Guidance | Structure-aware on real `<h2>` sections, token fallback within an oversized section | Decided, Phase 1 (issue #3) |
 | Builders' Library | Long-form prose, no reliable heading structure — plain token-based (~768/64, matches lesson 4) | Deferred to Phase 2 |
 | Whitepapers (PDF) | TBD — likely page- or section-based with overlap; depends on how consistently whitepapers use headings | Deferred to Phase 2 |
-| Case studies / Solutions Library | TBD — likely short enough per page to need little to no splitting | Deferred to Phase 2 |
+| Solutions Library | Structure-aware on real `<h2>` sections, same as WA/PG — confirmed live these guides use the same doc-viewer platform and section structure, no new chunking logic needed | Decided, Phase 2 (issue #33) |
+| Case studies | TBD — likely short enough per page to need little to no splitting | Deferred to Phase 2 |
 
 Update this table as part of the [onboarding checklist](onboarding_a_source.md)
 whenever a new source is added — don't leave the decision undocumented.
