@@ -11,10 +11,8 @@ own independent guide under a different slug, and there's no static page
 listing them all (the aws.amazon.com/solutions/ browse grid is populated
 by a client-side widget). Slugs are discovered instead from AWS's site-wide
 sitemap index, filtered to the English-locale solutions/latest/ entries —
-confirmed live to be a distinct, smaller set (62) from the much larger
-"Guidance" library (562 single-page briefs under solutions/<slug>/site_map/,
-tracked separately as issue #44 — deliberately out of scope here to avoid
-diluting retrieval with much shallower content).
+a distinct, smaller set (62) from the much larger single-page "Guidance"
+library, which is out of scope here.
 """
 
 from __future__ import annotations
@@ -65,10 +63,6 @@ def fetch() -> list[RawDocument]:
         try:
             toc = aws_docs.fetch_toc(session, guide_url)
         except (requests.RequestException, ValueError):
-            # A few sitemap entries point at retired/duplicate slugs that no
-            # longer have a real toc-contents.json (confirmed live: e.g.
-            # aws-innovation-sandbox redirects to the guide already covered
-            # under its current slug, innovation-sandbox-on-aws).
             print(f"  skipping {slug}: no toc-contents.json")
             continue
 
