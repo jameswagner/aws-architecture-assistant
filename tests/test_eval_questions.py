@@ -1,9 +1,10 @@
 from eval.run_eval import load_questions
 
-VALID_SOURCES = {"well_architected", "prescriptive_guidance"}
+VALID_SOURCES = {"well_architected", "prescriptive_guidance", "solutions_library"}
 URL_PREFIXES = {
     "well_architected": "https://docs.aws.amazon.com/wellarchitected/latest/framework/",
     "prescriptive_guidance": "https://docs.aws.amazon.com/prescriptive-guidance/latest/patterns/",
+    "solutions_library": "https://docs.aws.amazon.com/solutions/latest/",
 }
 
 
@@ -27,7 +28,7 @@ def test_every_question_has_required_fields():
         assert q["reference_answer"].strip()
 
 
-def test_both_sources_represented():
+def test_all_sources_represented():
     questions = load_questions()
     sources = {q["expected_source"] for q in questions}
     assert sources == VALID_SOURCES
