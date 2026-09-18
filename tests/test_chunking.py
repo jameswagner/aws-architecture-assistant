@@ -1,3 +1,4 @@
+import hashlib
 from datetime import date
 
 from common.chunking import CHUNK_SIZE, chunk_document
@@ -95,3 +96,59 @@ def test_empty_sections_are_skipped():
 
 def test_chunk_size_constant_is_within_recommended_range():
     assert 300 <= CHUNK_SIZE <= 1000
+
+
+def test_node_ids_are_deterministic_across_separate_runs():
+    doc = make_doc("Short guidance text.", pillar="Reliability")
+
+    ids_first_run = [n.node_id for n in chunk_document(doc)]
+    ids_second_run = [n.node_id for n in chunk_document(doc)]
+
+    assert ids_first_run == ids_second_run
+
+
+def test_node_ids_differ_by_section_even_at_the_same_index():
+    sections = [
+        {"heading": "Summary", "text": "Short.", "images": []},
+        {"heading": "Architecture", "text": "Also short.", "images": []},
+    ]
+    doc = make_doc("unused", sections=sections)
+
+    nodes = chunk_document(doc)
+
+    assert nodes[0].node_id != nodes[1].node_id
+
+
+def test_node_ids_differ_by_url():
+    doc_a = make_doc("Same text.")
+    doc_b = RawDocument(
+        source="well_architected",
+        title="Sample Page",
+        url="https://docs.aws.amazon.com/a-different-page.html",
+        content="Same text.",
+        fetched_on=date(2026, 1, 1),
+        metadata={},
+    )
+
+    id_a = chunk_document(doc_a)[0].node_id
+    id_b = chunk_document(doc_b)[0].node_id
+
+    assert id_a != id_b
+
+
+def test_content_hash_matches_the_chunk_text():
+    doc = make_doc("Short guidance text.")
+
+    node = chunk_document(doc)[0]
+
+    assert node.metadata["content_hash"] == hashlib.sha256(node.text.encode()).hexdigest()
+
+
+def test_content_hash_changes_when_text_changes():
+    doc_a = make_doc("Original text.")
+    doc_b = make_doc("Edited text.")
+
+    hash_a = chunk_document(doc_a)[0].metadata["content_hash"]
+    hash_b = chunk_document(doc_b)[0].metadata["content_hash"]
+
+    assert hash_a != hash_b
