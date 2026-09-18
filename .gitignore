@@ -8,6 +8,10 @@ dist/
 # Virtual environments
 .venv
 
+# Deps are pinned in requirements.txt, not uv's own lockfile workflow —
+# this regenerates as an inert byproduct of some uv commands
+uv.lock
+
 # Secrets
 .env
 

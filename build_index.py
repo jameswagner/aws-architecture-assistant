@@ -14,7 +14,7 @@ from llama_index.core import StorageContext, VectorStoreIndex
 from common.chunking import chunk_document
 from common.embeddings import get_embed_model
 from common.vector_store import reset_vector_store
-from ingest.sources import prescriptive_guidance, well_architected
+from ingest.sources import prescriptive_guidance, solutions_library, well_architected
 
 
 def build_index() -> VectorStoreIndex:
@@ -26,6 +26,11 @@ def build_index() -> VectorStoreIndex:
     pg_documents = prescriptive_guidance.fetch()
     print(f"  {len(pg_documents)} pages")
     documents += pg_documents
+
+    print("Fetching Solutions Library...")
+    sl_documents = solutions_library.fetch()
+    print(f"  {len(sl_documents)} pages")
+    documents += sl_documents
 
     print("Chunking...")
     nodes = [node for doc in documents for node in chunk_document(doc)]
